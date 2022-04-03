@@ -16,8 +16,10 @@ df_values.columns =['Commodity']
 df_values.drop('Commodity', axis=1, inplace=True)
 df_values.reset_index(level=0, inplace=True)
 datas= df_value.values
-dat=[]
-dat = pd.DataFrame(dat, columns=['Date',"Forecast(MIN)","Forecast(AVG)","Forecast(MAX)",'Commodity'])
+
+#Empty list, incase you need to save the data as a excel, csv,etc format
+# dat=[]
+# dat = pd.DataFrame(dat, columns=['Date',"Forecast(MIN)","Forecast(AVG)","Forecast(MAX)",'Commodity'])
 
 
 
@@ -33,35 +35,45 @@ for data in datas:
     file_name = 'kalimati0311.xlsx' 
     df = pd.read_excel(file_name, index_col=0)
     df = pd.DataFrame(df)
+
+    #filter to seperate the data accoriding to the product
     tom= (df['Commodity'] == res)
     df_to = df[tom]
+
+    #total data of particular product
     val = len(df_to)
     ta= 1
+
+    # sta variable is the len of the training data
     sta = val-ta
     df_to.index = pd.to_datetime(df_to['Date'], format='%Y.%m.%d')
     
     df_to['Minimum'] = df_to['Minimum'].str.replace('Rs. ', '')
     df_min=df_to[['Minimum']]
     df_min= df_min.astype(float)
+
+    # using the variable above to seperate the training and testing data
     df_train= df_min[0:sta]
     df_tester= df_min[sta:val]
    
     df_to['Maximum'] = df_to['Maximum'].str.replace('Rs. ', '')
     df_max = df_to[['Maximum']]
     df_max= df_max.astype(float)
+
     df_train1= df_max[0:sta]
     df_tester1= df_max[sta:val]
 
     df_avg = df_to[['Average']]
     df_avg= df_avg.astype(float)
+
     df_train2= df_avg[0:sta]
     df_tester2= df_avg[sta:val]
 
 
 #MINIMUM_FORECAST
-    df_model= sm.tsa.ARIMA(df_train, order=(4,1,2),trend ='t')
+    df_model= sm.tsa.ARIMA(df_train, order=(4,1,2),trend ='t') #change in the number of order will bring changes in the outcome accuracy 
     df_model_fit= df_model.fit()
-    df_fore=df_model_fit.forecast(steps=7)
+    df_fore=df_model_fit.forecast(steps=7) # steps denotes the period of forecast neeeded, in this case 7 days(1 week)
     df_fore = pd.DataFrame(df_fore)
     df_fore.reset_index(drop=True, inplace=True)
     df_tester.reset_index(drop=True, inplace=True)
