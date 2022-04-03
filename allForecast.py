@@ -71,7 +71,7 @@ for data in datas:
 
 
 #MINIMUM_FORECAST
-    df_model= sm.tsa.ARIMA(df_train, order=(4,1,2),trend ='t') #change in the number of order will bring changes in the outcome accuracy 
+    df_model= sm.tsa.ARIMA(df_train, order=(8,1,7),trend ='t') #change in the number of order will bring changes in the outcome accuracy 
     df_model_fit= df_model.fit()
     df_fore=df_model_fit.forecast(steps=7) # steps denotes the period of forecast neeeded, in this case 7 days(1 week)
     df_fore = pd.DataFrame(df_fore)
@@ -79,7 +79,7 @@ for data in datas:
     df_tester.reset_index(drop=True, inplace=True)
     
 #AVERAGE_FORECAST
-    df_model2= sm.tsa.ARIMA(df_train2, order=(4,1,2),trend ='t')
+    df_model2= sm.tsa.ARIMA(df_train2, order=(8,1,8),trend ='t')
     df_model_fit2= df_model2.fit()
     df_fore2=df_model_fit2.forecast(steps=7)
     df_fore2 = pd.DataFrame(df_fore2)
@@ -88,7 +88,7 @@ for data in datas:
 
     
 #MAXIMUM_FORECAST
-    df_model1= sm.tsa.ARIMA(df_train1, order=(4,1,2),trend ='t')
+    df_model1= sm.tsa.ARIMA(df_train1, order=(8,1,8),trend ='t')
     df_model_fit1= df_model1.fit()
     df_fore1=df_model_fit1.forecast(steps=7)
     df_fore1 = pd.DataFrame(df_fore1)
