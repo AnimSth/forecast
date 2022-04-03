@@ -1,20 +1,10 @@
 import pandas as pd
-import numpy as np
-import matplotlib.pylab as plt
-# %matplotlib inline
-from matplotlib.pylab import rcParams
-rcParams['figure.figsize'] = 10,6
 from statsmodels.tsa.arima_model import ARIMA
 import statsmodels.api as sm
 import warnings
-import pymongo
-from pymongo import MongoClient
+
 warnings.filterwarnings('ignore')
 
-
-
-client = pymongo.MongoClient()
-db = client['forecasted_Data']
 
 
 file_name = 'kalimati0311.xlsx' 
@@ -38,15 +28,12 @@ def listToString(s):
     return str1 
 
 
-
-datas = ['Turnip A', 'Bakula','Christophine','Coriander Green','Arum'] #
 for data in datas:
-    # res = listToString(data)
+    res = listToString(data)
     file_name = 'kalimati0311.xlsx' 
     df = pd.read_excel(file_name, index_col=0)
     df = pd.DataFrame(df)
-    tom= (df['Commodity'] == data ) #
-    # tom= (df['Commodity'] == res)
+    tom= (df['Commodity'] == res)
     df_to = df[tom]
     val = len(df_to)
     ta= 1
@@ -78,7 +65,7 @@ for data in datas:
     df_fore = pd.DataFrame(df_fore)
     df_fore.reset_index(drop=True, inplace=True)
     df_tester.reset_index(drop=True, inplace=True)
-
+    
 #AVERAGE_FORECAST
     df_model2= sm.tsa.ARIMA(df_train2, order=(4,1,2),trend ='t')
     df_model_fit2= df_model2.fit()
@@ -86,6 +73,7 @@ for data in datas:
     df_fore2 = pd.DataFrame(df_fore2)
     df_fore2.reset_index(drop=True, inplace=True)
     df_tester2.reset_index(drop=True, inplace=True)
+
     
 #MAXIMUM_FORECAST
     df_model1= sm.tsa.ARIMA(df_train1, order=(4,1,2),trend ='t')
@@ -102,30 +90,25 @@ for data in datas:
     
     df_forecast = df_forecast.join(df_fore['predicted_mean'])
     df_forecast.columns=['Date',"Forecast(MIN)"]
-    # df_forecast = df_forecast.join(df_tester['Minimum'])
+
 
     df_forecast = df_forecast.join(df_fore2['predicted_mean'])
     df_forecast.columns=['Date',"Forecast(MIN)","Forecast(AVG)"]
-    # df_forecast = df_forecast.join(df_tester2['Average'])
+
 
     df_forecast = df_forecast.join(df_fore1['predicted_mean'])
     df_forecast.columns=['Date',"Forecast(MIN)","Forecast(AVG)","Forecast(MAX)"]
-    # df_forecast = df_forecast.join(df_tester1['Maximum'])
+  
 
 
-    df_forecast['Commodity'] = data
-    # df_forecast['Commodity'] = res
+    df_forecast['Commodity'] = res
     df_forecast['Forecast(MIN)'] = df_forecast['Forecast(MIN)'].round()
     df_forecast['Forecast(AVG)'] = df_forecast['Forecast(AVG)'].round()
     df_forecast['Forecast(MAX)'] = df_forecast['Forecast(MAX)'].round()
+    print(df_forecast)
 
-    dat = dat.append([df_forecast],ignore_index=False, verify_integrity=False, sort=None)
-
-    # df_forecast.set_index('Date', inplace=True)
-    # print(df_forecast)
-print(dat)
-dat.to_csv('df.csv')
+#To append the forecasted data and save it into csv file.
+    # dat = dat.append([df_forecast],ignore_index=False, verify_integrity=False, sort=None)
+# dat.to_('df.csv')
 
 
-    # db.nepali.insert_many(df_forecast.to_dict('records'))
-# print('Done')
